@@ -2,7 +2,7 @@ const sockets = require('./sockets.js');
 
 let userList = {}; // list of users
 
-const gravity = -1.2;   //the value of gravity that will be applied
+const gravityConstant = 2;   //the value of gravity that will be applied
 
 // update our entire userlist
 const setUserList = (users) => {
@@ -16,7 +16,34 @@ const setUser = (user) => {
 
 //put the effects of gravity on the user
 const applyGravity = (user) => {
+    //dont apply gravity if the user is on the ground
+    if (user.y === 400){
+        return;
+    }
+    else{
+        //update destY based on upwards velocity
+        user.destY -= user.upVelocity * user.speed;
+        
+        //shrink upwards velocity
+        console.log(user.upVelocity);
+        user.upVelocity *= 0.8;
+        if (user.upVelocity <= 0.1){
+            user.upVelocity = 0;
+        }
+        
+        //update destY based on gravity
+        user.destY += gravityConstant * user.speed;
+        
+        //lock destY onto the screen
+        if (user.destY < 0){
+            user.destY = 0;
+        }
+        if (user.destY > 400){
+            user.destY = 400;
+        }
+    }
     
+    sockets.sendGravity(user);
 };
 
 // applies gravity to all the users in the room
@@ -28,7 +55,9 @@ const gravity = () => {
     
     // get all users
     const keys = Object.keys(userList);
-    
+    for (let i = 0; i < keys.length; i++){
+        applyGravity(userList[keys[i]]);
+    }
 };
 
 // apply gravity every 20ms

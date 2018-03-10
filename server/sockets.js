@@ -1,6 +1,6 @@
 const xxh = require('xxhashjs');
 // custom class for the player
-const Pharacter = require('./classes/Player.js');
+const Player = require('./users/Player.js');
 // gravity stuff
 const physics = require('./physics.js');
 
@@ -9,18 +9,6 @@ const users = {};
 
 // our socketio instance
 let io;
-
-// Possible directions a user can move
-const directions = {
-  DOWNLEFT: 0,
-  DOWN: 1,
-  DOWNRIGHT: 2,
-  LEFT: 3,
-  UPLEFT: 4,
-  RIGHT: 5,
-  UPRIGHT: 6,
-  UP: 7,
-};
 
 // function to setup our socket server
 const setupSockets = (ioServer) => {
@@ -36,7 +24,7 @@ const setupSockets = (ioServer) => {
     const hash = xxh.h32(`${socket.id}${new Date().getTime()}`, 0xDEADBEEF).toString(16);
 
     // create a new user and store it by its unique id
-    users[hash] = new user(hash);
+    users[hash] = new Player(hash);
 
     // add the id to the user's socket object for quick reference
     socket.hash = hash;
@@ -51,7 +39,7 @@ const setupSockets = (ioServer) => {
       users[socket.hash].lastUpdate = new Date().getTime();
         
       // update physics simulation
-      physics.setuser(users[socket.hash]);
+      physics.setUser(users[socket.hash]);
 
       // tell everyone someone has moved
       io.sockets.in('room1').emit('updatedMovement', users[socket.hash]);
@@ -65,7 +53,7 @@ const setupSockets = (ioServer) => {
       // remove this user from our object
       delete users[socket.hash];
       // update the user list in our physics calculations
-      physics.setuserList(users);
+      physics.setUserList(users);
 
       // remove this user from the socket room
       socket.leave('room1');
@@ -73,4 +61,12 @@ const setupSockets = (ioServer) => {
   });
 };
 
+//function for returning gravity
+const sendGravity = (data) => {
+    users[data.hash] = data;
+    
+    io.sockets.in('room1').emit('updatedMovement', users[data.hash]);
+};
+
 module.exports.setupSockets = setupSockets;
+module.exports.sendGravity = sendGravity;

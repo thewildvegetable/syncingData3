@@ -29,7 +29,13 @@ const redraw = (time) => {
     square.y = lerp(square.prevY, square.destY, square.alpha);
 
     //draw
-    ctx.fillStyle = square.color;
+    //make our square draw black to be distinguished
+    if(square.hash === hash) {
+      ctx.fillStyle = "black";
+    }
+    else {
+      ctx.fillStyle = square.color;
+    }
     ctx.fillRect(square.x, square.y, square.width, square.height);
   }
   

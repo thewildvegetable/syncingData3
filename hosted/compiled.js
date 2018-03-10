@@ -28,7 +28,12 @@ const redraw = time => {
     square.y = lerp(square.prevY, square.destY, square.alpha);
 
     //draw
-    ctx.fillStyle = square.color;
+    //make our square draw black to be distinguished
+    if (square.hash === hash) {
+      ctx.fillStyle = "black";
+    } else {
+      ctx.fillStyle = square.color;
+    }
     ctx.fillRect(square.x, square.y, square.width, square.height);
   }
 
@@ -166,7 +171,7 @@ const updatePosition = () => {
   if (square.moveLeft && square.destX > 0) {
     square.destX -= 2;
   }
-  if (square.moveRight && square.destX < 400) {
+  if (square.moveRight && square.destX < 600) {
     square.destX += 2;
   }
 

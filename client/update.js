@@ -70,7 +70,7 @@ const updatePosition = () => {
   if(square.moveLeft && square.destX > 0) {
     square.destX -= 2;
   }
-  if(square.moveRight && square.destX < 400) {
+  if(square.moveRight && square.destX < 600) {
     square.destX += 2;
   }
 
